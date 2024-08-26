@@ -2,6 +2,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 public class PhoneBookTest {
     static PhoneBook phoneBook;
     @BeforeAll
@@ -54,5 +57,37 @@ public class PhoneBookTest {
 
         // then:
         Assertions.assertEquals(expected, result);
+    }
+
+    @Test
+    public void testPrintAllNames() {
+
+        //given:
+        phoneBook.add("Vasya","+79161111111");
+        phoneBook.add("Petya","+79162222222");
+        phoneBook.add("Kolya","+79163333333");
+        String expected = "Kolya\r\n" +
+                "Petya\r\n" +
+                "Vasya\r\n";
+
+        String consoleOutput = null;
+        PrintStream originalOutput = System.out;
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream(100);
+             PrintStream capture = new PrintStream(baos)) {
+            System.setOut(capture);
+            phoneBook.printAllNames();
+            capture.flush();
+            System.setOut(originalOutput);
+
+
+            // when:
+            consoleOutput = baos.toString();
+
+            // then:
+            Assertions.assertEquals(expected, consoleOutput);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
